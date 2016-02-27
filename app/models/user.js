@@ -6,8 +6,8 @@ module.exports = mongoose.model('User', {
         firstName: String,
         lastName: String
     },
-    userName: String,
-    email: String,
+    userName: {type: String, unique: true},
+    email: {type:String, unique:true},
     password: String,
     admin: Boolean,
     img: String,

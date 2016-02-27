@@ -3,7 +3,7 @@
  */
 var path = require('path');
 
-// load the todo model
+// load the model
 var Resource = require('./models/resource');
 var Category = require('./models/category');
 var SubCategory = require('./models/subcategory');
@@ -14,20 +14,39 @@ module.exports = function (app) {
     //api =============================
     // get all categories
     app.get('/api/category', function (req, res) {
+        console.log('hit', req.query);
+
+        var name = req.query['name'];
+        var subcategories = req.query['subcategories'];
+
+        console.log(name, subcategories);
 
         //check if subcategory, and resources for category exists and return resources
-        if(req.param('subcategory') && req.param('resources')){
-            Resource.find()
+        if(req.query.subcategories && req.query.name){
+            Resource.find(function(err, docs){
+                console.log('err',err, 'docs',docs);
+                res.json(docs);
+            });
+            //resource.exec(function(err, docs){
+            //    console.log('err',err, 'docs',docs);
+            //    res.json(docs);
+            //});
+            console.log('detected');
+
+        }else{
+            // use mongoose to get all categories in the database
+            Category.find(function (err, resources) {
+
+                //if there is an error retrieving, send the error.
+                if (err) res.status(500).send(err);
+
+                console.log('resources', resources);
+
+                res.json(resources); // return all categories as JSON
+            });
         }
 
-        // use mongoose to get all categories in the database
-        Category.find(function (err, resources) {
 
-            //if there is an error retrieving, send the error.
-            if (err) res.send(err);
-
-            res.json(resources); // return all categories as JSON
-        });
     });
     //get all subcategories for category or return all resources for category if not subcategories exist
     app.get('/api/category', function (req, res) {
